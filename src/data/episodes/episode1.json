@@ -1,0 +1,71 @@
+{
+    "id": 1,
+    "title": "THE FALL",
+    "scenes": [
+        {
+            "id": "start",
+            "type": "dialogue",
+            "speaker": "STORY",
+            "text": "The engine sputters. Your van comes to a halt on a deserted stretch of I-5. Fog rolls over the hood.",
+            "next": "exploration_1"
+        },
+        {
+            "id": "exploration_1",
+            "type": "exploration",
+            "next": "encounter_elias"
+        },
+        {
+            "id": "encounter_elias",
+            "type": "dialogue",
+            "speaker": "STRANGER",
+            "text": "Hey! You there! This road isn't safe. Help me clear these things and maybe we both make it through the night.",
+            "choices": [
+                {
+                    "text": "Help him (Trust +10, Food -1)",
+                    "next": "choice_help",
+                    "action": { "type": "trust", "id": "elias", "value": 10, "resource": "food", "amount": -1 }
+                },
+                {
+                    "text": "Keep your distance (Pragmatic +5)",
+                    "next": "choice_distance",
+                    "action": { "type": "flag", "name": "distanced_elias", "value": true }
+                }
+            ]
+        },
+        {
+            "id": "choice_help",
+            "type": "dialogue",
+            "speaker": "ELIAS",
+            "text": "I appreciate it. I'm Elias. Watch my back—they're coming from the trees!",
+            "next": "combat_1"
+        },
+        {
+            "id": "choice_distance",
+            "type": "dialogue",
+            "speaker": "ELIAS",
+            "text": "Fine. Die your way then. But they're coming regardless!",
+            "next": "combat_1"
+        },
+        {
+            "id": "combat_1",
+            "type": "combat",
+            "encounterId": "first_horde",
+            "win": "win_scene",
+            "lose": "lose_scene"
+        },
+        {
+            "id": "win_scene",
+            "type": "dialogue",
+            "speaker": "STORY",
+            "text": "The last of the creatures falls. The silence that follows is heavy. You've survived the first of many dead roads.",
+            "next": "end_episode"
+        },
+        {
+            "id": "lose_scene",
+            "type": "dialogue",
+            "speaker": "STORY",
+            "text": "The darkness consumes you. Another name added to the list of the fallen.",
+            "next": "main_menu"
+        }
+    ]
+}

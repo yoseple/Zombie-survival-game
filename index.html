@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DEAD ROADS | Mobile Survival RPG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050505;
+            color: #eee;
+            font-family: 'Special Elite', system-ui;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Vignette Effect */
+        #vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        #three-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .ui-element {
+            pointer-events: auto;
+        }
+
+        /* Dialogue Box */
+        #dialogue-container {
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.8));
+            border-top: 1px solid rgba(231, 76, 60, 0.3);
+            padding: 30px;
+            min-height: 25%;
+            display: none;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+        }
+
+        #speaker-name {
+            color: #e74c3c;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            border-left: 4px solid #e74c3c;
+            padding-left: 15px;
+        }
+
+        #dialogue-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #ccc;
+        }
+
+        #choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: rgba(40, 40, 40, 0.6);
+            border: 1px solid #444;
+            color: #eee;
+            padding: 15px 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Special Elite', serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        .choice-btn:hover {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: #e74c3c;
+            padding-left: 30px;
+        }
+
+        /* Menu */
+        #main-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(20,20,20,0.8), rgba(0,0,0,1));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        #main-menu h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 5rem;
+            color: #e74c3c;
+            letter-spacing: 15px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+        }
+
+        #main-menu p {
+            font-size: 1.2rem;
+            color: #666;
+            letter-spacing: 5px;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+
+        .menu-btn {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #eee;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 280px;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+        }
+
+        .menu-btn:hover {
+            background: #e74c3c;
+            color: #000;
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.4);
+        }
+
+        /* Combat UI */
+        #combat-ui {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            display: none;
+            text-align: center;
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .stat-bar {
+            background: #111;
+            height: 6px;
+            width: 250px;
+            margin: 10px auto;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            width: 100%;
+            background: #e74c3c;
+            box-shadow: 0 0 10px #e74c3c;
+        }
+
+        /* Overlay messages */
+        #notification {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            padding: 15px 40px;
+            border-top: 1px solid #e74c3c;
+            border-bottom: 1px solid #e74c3c;
+            display: none;
+            z-index: 200;
+            text-align: center;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="vignette"></div>
+        <canvas id="three-canvas"></canvas>
+
+        <div id="ui-layer">
+            <!-- Combat Stats -->
+            <div id="combat-ui" class="ui-element">
+                <div>THREAT LEVEL</div>
+                <div class="stat-bar"><div id="threat-fill" class="stat-fill" style="width: 0%"></div></div>
+                <div id="combat-turn-info">PLAYER TURN</div>
+            </div>
+
+            <!-- Notification -->
+            <div id="notification" class="ui-element"></div>
+
+            <!-- Main Menu -->
+            <div id="main-menu" class="ui-element">
+                <h1>DEAD ROADS</h1>
+                <p>EPISODIC SURVIVAL RPG</p>
+                <button id="start-btn" class="menu-btn">NEW JOURNEY</button>
+                <button id="load-btn" class="menu-btn" style="display: none;">CONTINUE</button>
+            </div>
+
+            <!-- Dialogue Overlay -->
+            <div id="dialogue-container" class="ui-element">
+                <div id="speaker-name">STORY</div>
+                <div id="dialogue-text">...</div>
+                <div id="choices-container"></div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

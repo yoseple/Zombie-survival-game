@@ -1,0 +1,11 @@
+{
+    "id": "elias",
+    "name": "Elias",
+    "archetype": "Cynical Sniper",
+    "traits": ["Dead Eye"],
+    "trust": 0,
+    "morale": 50,
+    "alive": true,
+    "fear": "Starvation",
+    "ambition": "Solitude"
+}
